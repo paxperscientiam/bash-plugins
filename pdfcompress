@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Compress a pdf using gs.
+# Requires in input the compression type, the name of the file to compress and the name of the output file (in this order).
+# Example:
+# pdfcompress screen MyHighResDocument.pdf MyLowResDocument.pdf
+#
+# Possible values for compression types are:
+# screen , selects low-resolution output similar to the Acrobat Distiller “Screen Optimized” setting.
+# ebook , selects medium-resolution output similar to the Acrobat Distiller “eBook” setting.
+# printer , selects output similar to the Acrobat Distiller “Print Optimized” setting.
+# prepress , selects output similar to Acrobat Distiller “Prepress Optimized” setting.
+# default selects output intended to be useful across a wide variety of uses, possibly at the expense of a larger output file
+#
+# link: http://lucacerone.net/2014/01/reduce-pdf-size-from-command-line/
+
+pdfcompress () {
+    if [[ "${#@}" -eq 0 ]]; then
+        cat <<'EOF'
+Compress a pdf using gs.
+Requires in input the compression type, the name of the file to compress and the name of the output file (in this order).
+Example:
+pdfcompress screen MyHighResDocument.pdf MyLowResDocument.pdf
+
+Possible values for compression types are:
+screen , selects low-resolution output similar to the Acrobat Distiller “Screen Optimized” setting.
+ebook , selects medium-resolution output similar to the Acrobat Distiller “eBook” setting.
+printer , selects output similar to the Acrobat Distiller “Print Optimized” setting.
+prepress , selects output similar to Acrobat Distiller “Prepress Optimized” setting.
+default selects output intended to be useful across a wide variety of uses, possibly at the expense of a larger output file
+
+link: http://lucacerone.net/2014/01/reduce-pdf-size-from-command-line/
+EOF
+        return 0
+    fi
+#    dPDFSETTINGS="/${1}"
+
+    gs -q -dNOPAUSE -dBATCH -dSAFER -dNOCACHE \
+       -sDEVICE=pdfwrite \
+       -dCompatibilityLevel=1.3 \
+       -dPDFSETTINGS=/printer \
+       -dEmbedAllFonts=true \
+       -dSubsetFonts=true \
+       -dColorImageDownsampleType=/Bicubic \
+       -dColorImageResolution=72 \
+       -dGrayImageDownsampleType=/Bicubic \
+       -dGrayImageResolution=72 \
+       -dMonoImageDownsampleType=/Bicubic \
+       -dMonoImageResolution=72 \
+       -dDetectDuplicateImages=true \
+       -sOutputFile="${1}".compressed.pdf "${1}";
+
+}
