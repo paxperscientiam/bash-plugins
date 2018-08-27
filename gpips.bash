@@ -39,10 +39,10 @@ function gpip${py//./} ()
             py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} uninstall
         elif [[ "\$*" =~ (install|"-r") ]]
         then
-            ${pyvar} "\$@" ${opts}
+            ${pyvar} "\$@" --no-deps  ${opts}
         elif [[ "\$*" =~ "upgrade" ]]
         then
-            py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} install -U --user
+            py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} install -U --no-deps --user
         elif [[ "\$*" =~ config|check|search ]]
         then
            ${pyvar} "\${@}"
