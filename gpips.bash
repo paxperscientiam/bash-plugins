@@ -21,7 +21,7 @@ do
     if command -v "python${py}" > /dev/null 2>&1
     then
         pyvar="python${py} -m pip"
-        opts="--cache-dir=${HOME}/.pip/$py/cache --disable-pip-version-check --user --no-deps"
+        opts="--cache-dir=${HOME}/.pip/$py/cache --disable-pip-version-check --user"
         alias py="${pyvar}"
 
         source <(cat << EOF
@@ -29,10 +29,10 @@ function gpip${py//./} ()
 {
         if [[ "\$*" =~ ("list"|"list \-o"|"list --outdated") ]]
         then
-            py "\${@}" --format=columns --user --no-cache-dir
+            ${pyvar} "\${@}" --format=columns ${opts}
         elif [[ "\$*" =~ "uninstall" ]]
         then
-            ${pyvar} "\$@"
+            ${pyvar} "\${@}"
         elif [[ "\$*" =~ uninstall-all|ua ]]
         then
           echo "Uninstalling all user packages."
@@ -45,7 +45,7 @@ function gpip${py//./} ()
             py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} install -U --user
         elif [[ "\$*" =~ config|check|search ]]
         then
-           py "\${@}"
+           ${pyvar} "\${@}"
         else
             echo "Unsupported option."
         fi
