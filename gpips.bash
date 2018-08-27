@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# While I use macports to install pretty much all my python stuff, I still have a separate library of stuff not available on macports. Either way, I let macports handle package dependencies.
+
 # Note: only tested on macOS; asssumes appropriate pips installed
 # Disclaimer: use at your own peril
 # Parting words: have a nice day
@@ -19,24 +21,28 @@ do
     if command -v "python${py}" > /dev/null 2>&1
     then
         pyvar="python${py} -m pip"
-        opts="--cache-dir=${HOME}/.pip/$py/cache --disable-pip-version-check --user"
+        opts="--cache-dir=${HOME}/.pip/$py/cache --disable-pip-version-check --user --no-deps"
         alias py="${pyvar}"
 
         source <(cat << EOF
 function gpip${py//./} ()
 {
-        if [[ "\$*" =~ "list" ]]
+        if [[ "\$*" =~ ("list"|"list \-o"|"list --outdated") ]]
         then
-            py "\$*" --format=columns
+            py "\$*" --format=columns --user
         elif [[ "\$*" =~ "uninstall" ]]
         then
             ${pyvar} "\$@"
-        elif [[ "\$*" =~ install ]]
+        elif [[ "\$*" =~ uninstall-all|ua ]]
         then
-            ${pyvar} "\$@" $opts
+          echo "Uninstalling all user packages."
+            py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} uninstall
+        elif [[ "\$*" =~ (install|"-r") ]]
+        then
+            ${pyvar} "\$@" ${opts}
         elif [[ "\$*" =~ "upgrade" ]]
         then
-            py freeze | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} install -U
+            py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} install -U --user
         elif [[ "\$*" =~ config|check|search ]]
         then
            py "\$*"
