@@ -29,7 +29,7 @@ function gpip${py//./} ()
 {
         if [[ "\$*" =~ ("list"|"list \-o"|"list --outdated") ]]
         then
-            py "\$*" --format=columns --user
+            py "\${@}" --format=columns --user --no-cache-dir
         elif [[ "\$*" =~ "uninstall" ]]
         then
             ${pyvar} "\$@"
@@ -45,7 +45,7 @@ function gpip${py//./} ()
             py freeze --user | grep -v '^\\-e' | cut -d = -f 1 | xargs -n1 ${pyvar} install -U --user
         elif [[ "\$*" =~ config|check|search ]]
         then
-           py "\$*"
+           py "\${@}"
         else
             echo "Unsupported option."
         fi
