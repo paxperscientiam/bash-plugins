@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
+
 function imgcrush() {
+    command -v pngcrush >/dev/null 2>&1 || \
+        { printf '%s\n' "Pngcrush not found!" && return 1; }
 
     for png in $(find . -name "*.png");
     do
