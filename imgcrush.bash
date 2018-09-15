@@ -8,7 +8,7 @@ function imgcrush() {
     for png in $(find . -name "*.png");
     do
 	      echo "crushing $png"
-	      pngcrush -brute "$png" temp.png
+	      pngcrush -brute "${png}" temp.png
 	      mv -f temp.png "${png}"
     done;
 }
