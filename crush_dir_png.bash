@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-function imgcrush() {
+function crush_dir_png() {
     command -v pngcrush >/dev/null 2>&1 || \
         { printf '%s\n' "Pngcrush not found!" && return 1; }
 
@@ -15,7 +15,7 @@ function imgcrush() {
 
 ## per bpkg guidelines
 if [[ ${BASH_SOURCE[0]} != "${0}" ]]; then
-    export -f imgcrush
+    export -f crush_dir_png
 else
-    imgcrush "${@}"
+    crush_dir_png "${@}"
 fi

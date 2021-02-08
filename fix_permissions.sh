@@ -3,7 +3,7 @@
 ### https://github.com/emotality
 ## set_permissions.sh
 #
-function fix-perms () {
+function fix_perms () {
     var=$(pwd)
     echo " The current working directory is: '$var'"
 
@@ -15,3 +15,10 @@ function fix-perms () {
 
     printf " Folders and files permissions set! Exiting.\\n"
 }
+
+if [[ ${BASH_SOURCE[0]} != $0 ]]; then
+    export -f fix_perms
+else
+    fix_perms "${@}"
+    exit $?
+fi 

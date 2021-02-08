@@ -12,5 +12,11 @@ function base64img() {
     printf 'data:image/%s;base64,%s' "${ext}" "${raw}" | pbcopy &
     wait
     printf '%s\n' "Content in clipboad."
-
 }
+
+if [[ ${BASH_SOURCE[0]} != $0 ]]; then
+    export -f base64img
+else
+    base64img "${@}"
+    exit $?
+fi

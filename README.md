@@ -1,4 +1,6 @@
-Not ready for primetime.
+Mix of utility functions I've written or archived from the around the web.
+
+
 
 
 ``` shell
