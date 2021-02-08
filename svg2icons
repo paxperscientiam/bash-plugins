@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+function finish {
+    echo "I am complete."
+}
+trap finish EXIT
+function rekt {
+    echo "Canceled."
+    exit
+}
+trap rekt SIGINT
+
+
+shopt -s nullglob
+
+declare path
+declare sizes
+declare outdir
+declare options="${@}"
+
+for opt in "${@}"; do
+    if [[ "${options[*]}" =~ '-help' ]]; then
+        cat <<-EOF
+Usage:
+  sv2icons -path <FILE_PATH> -sizes <INT1,INT2,...,INTN> -scales <INT1,INT2,...,INTN> -outdir <PATH_OUT>
+EOF
+        exit 0
+    fi
+    if [[ "${opt}" == '-path' ]]; then
+        shift
+        path="${1:?}"
+        shift
+    elif [[ "${opt}" == '-sizes' ]]; then
+        shift
+        sizes="${1:?}"
+        shift
+    elif [[ "${opt}" == '-scales' ]]; then
+        shift
+        scales="${1:?}"
+        shift
+    elif [[ "${opt}" == '-outdir' ]]; then
+        shift
+        outdir="${1:?}"
+        shift
+    fi
+done
+# icon-29@2x
+
+echo "${outdir:?}" @> /dev/null
+echo "${sizes:?}" @> /dev/null
+
+[[ ! -d "${outdir}" ]] && mkdir -p "${outdir}"
+
+#echo $*
+IFS=','
+for size in ${sizes[@]}; do
+    name="icon-${size}"
+    for scale in ${scales[@]}; do
+        reSize=$(( size * scale ))
+        if [[ "${scale}" -eq 1 ]]; then
+            printf -v scaledname '%s.png' "${name}"
+        else
+            printf -v scaledname '%s@%sx.png' "${name}" "${scale}"
+        fi
+        printf 'Making %s ... ' "${scaledname}"
+        convert -background none -resize "${reSize}" \
+                -density 400 \
+                "${path}" \
+                "${outdir}/${scaledname}" &
+        wait
+        printf 'done\n'
+    done
+done

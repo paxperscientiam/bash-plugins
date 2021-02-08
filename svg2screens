@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+function finish {
+    echo "I am complete."
+}
+trap finish EXIT
+function rekt {
+    echo "Canceled."
+    exit
+}
+trap rekt SIGINT
+shopt -s nullglob
+
+declare -a series=(
+    '384x512 LaunchScreen-Center.png'
+    '768x1024  LaunchScreen-Center@2x.png'
+    '1152x1536 LaunchScreen.Center@3x.png'
+    #    '320x480 Default.png'
+    #     '640x960 Default@2x.png'
+    #     '640x1136 Default-568h@2x.png'
+    #     '750x1334 Default-667h@2x.png'
+    #     '1242x2208 Default-736h@3x.png'
+    #     '1125x2436 Default-1125h.png'
+    #     '2436x1125 Default-Landscape-X.png'
+    #     '768x1024 Default-Portrait.png'
+    #     '1024x768 Default-Landscape.png'
+    #     '1536x2048 Default-Portrait@2x.png'
+    #     '2048x1536 Default-Landscape@2x.png'
+)
+
+declare path
+declare outdir
+declare options="${@}"
+
+
+
+for opt in "${@}"; do
+    if [[ "${options[*]}" =~ '-help' ]]; then
+        cat <<-EOF
+Usage:
+  sv2screens -path <FILE_PATH> -outdir <PATH_OUT>
+EOF
+        exit 0
+    fi
+    if [[ "${opt}" == '-path' ]]; then
+        shift
+        path="${1:?}"
+        shift
+    elif [[ "${opt}" == '-outdir' ]]; then
+        shift
+        outdir="${1:?}"
+        shift
+    fi
+done
+# icon-29@2x
+echo "${path:?}" @> /dev/null
+echo "${outdir:?}" @> /dev/null
+
+[[ ! -d "${outdir}" ]] && mkdir -p "${outdir}"
+
+for part in "${series[@]}"; do
+    dual=( ${part[@]} )
+    IFS=' ' size="${dual[0]}"
+    IFS=' ' filename="${dual[1]}"
+    echo $filename
+    convert -density 400 -resize "${size}" "${path}" miff:- | \
+        convert miff:- -gravity center \
+                -background white \
+                -extent "${size}" \
+                "${outdir}/${filename}"
+done
+exit
+
+
+
+
+#echo $*
+IFS=','
+for size in ${sizes[@]}; do
+    name="icon-${size}"
+    for scale in ${scales[@]}; do
+        reSize=$(( size * scale ))
+        if [[ "${scale}" -eq 1 ]]; then
+            printf -v scaledname '%s.png' "${name}"
+        else
+            printf -v scaledname '%s@%sx.png' "${name}" "${scale}"
+        fi
+        printf 'Making %s ... ' "${scaledname}"
+        convert -density 1000 -resize "${reSize}" \
+                -background none \
+                "${path}" \
+                "${outdir}/${scaledname}" &
+        wait
+        printf 'done\n'
+    done
+done
+
+
+# reference from nativescript
+# iPhone 1g-3Gs   320x480   Default.png
+# iPhone 4, 4s  640x960   Default@2x.png
+# iPhone 5, 5c, 5s  640x1136  Default-568h@2x.png
+# iPhone 6s - 8   750x1334  Default-667h@2x.png
+# iPhone 6s Plus - 8 Plus   1242x2208   Default-736h@3x.png
+# iPhone X  1125px × 2436px   Default-1125h.png
+# iPhone X Landscape  2436px × 1125px   Default-Landscape-X.png
+# iPad, iPad 2, Mini  768x1024  Default-Portrait.png
+# iPad Landscape  1024x768  Default-Landscape.png
+# iPad Retina   1536x2048   Default-Portrait@2x.png
+# 12.9" iPad Pro  2048x1536   Default-Landscape@2x.png
