@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+function finish {
+    printf '\n%s' "I am complete."
+}
+trap finish EXIT
+function rekt {
+    echo "Canceled."
+    exit
+}
+trap rekt SIGINT
+
+shopt -s nullglob
+
+declare path
+declare outdir
+declare options="${@}"
+declare size
+
+for opt in "${@}"; do
+    if [[ "${options[*]}" =~ -help|-h ]]; then
+        cat <<-EOF
+Usage:
+  pdf2thumbnail -path <FILE_PATH> -size <INT> -outdir <PATH_OUT>
+EOF
+        exit 0
+    fi
+    if [[ "${opt}" == '-path' ]]; then
+        shift
+        path="${1:?}"
+        shift
+    elif [[ "${opt}" == '-size' ]]; then
+        shift
+        size="${1:?}"
+        shift
+    elif [[ "${opt}" == '-outdir' ]]; then
+        shift
+        outdir="${1:?}"
+        shift
+    fi
+
+done
+
+echo "${outdir:?}" @> /dev/null
+echo "${size:?}" @> /dev/null
+
+[[ ! -d "${outdir}" ]] && mkdir -p "${outdir}"
+
+printf -v filename "$(basename "${path//\.pdf/}")"
+
+[[ ! -f "${path}" ]] && printf '%s does not exist\n' "${path}" && exit 1
+
+\convert -thumbnail "${size}" \
+         -background white \
+         -alpha remove \
+         "${path}" \
+         "${outdir}/${filename}-"$'@'"${size}".png

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+
+shopt -s nullglob
+
+function doIt {
+    declare -a options=("${@}")
+
+    local R
+    local G
+    local B
+    local name
+    local size
+    local count
+    local outfile
+    local isFractal=0
+
+    for opt in "${@}"; do
+        if [[ "${options[*]}" =~ ^-help|-h$ ]]; then
+            cat <<-EOF
+Usage:
+  create-dummy-images -name <FILE_NAME> -size <INTxINT> -count <OUTPUT_FILE_COUNT> [-fractal]
+EOF
+            exit 0
+        fi
+        if [[ "${opt}" == '-name' ]]; then
+            shift
+            name="${1:?}"
+            shift
+        elif [[ "${opt}" == '-size' ]]; then
+            shift
+            size="${1:?}"
+            shift
+        elif [[ "${opt}" == '-count' ]]; then
+            shift
+            count="${1:?}"
+            shift
+        elif [[ "${opt}" == '-fractal' ]]; then
+            isFractal=1
+            shift
+        fi
+    done
+
+    for i in $(seq -f "%03g" 0 "${count}")
+    do
+        printf -v outfile '%s-%s.png' "${name}" "${i}"
+        echo "Generating ${outfile} ..."
+
+        if [[ "${isFractal}" -eq 1 ]]; then
+            \convert  -size "${size}" \
+                      fractal: \
+                      -pointsize 40 -gravity Center -annotate +0+0 "${i}" \
+                      "${outfile}" &
+        else
+            R=$(( "${RANDOM}" % 255 + 1 ))
+            G=$(( "${RANDOM}" % 255 + 1 ))
+            B=$(( "${RANDOM}" % 255 + 1 ))
+
+            \convert -size "${size}" xc:rgb\($R,$G,$B\) \
+                     -pointsize 40 -gravity Center -annotate +0+0 "${i}" \
+                     "${outfile}" &
+        fi
+        wait
+        printf 'done\n'
+
+    done
+}
+
+doIt "${@}"

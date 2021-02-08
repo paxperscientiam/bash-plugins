@@ -1,0 +1,11 @@
+#!/bin/bash
+
+f() {
+    local out
+    out="output.pdf"
+    [[ ${#2} -gt 0 ]] && out="${2}"
+
+  gs -sDEVICE=pdfwrite -dPDFSETTINGS=/screen -dDetectDuplicateImages=true -dCompatibilityLevel=1.4 -dNOPAUSE -dQUIET -dBATCH -sOutputFile="${out}" "${1}"
+}
+
+f "${@}"

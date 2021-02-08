@@ -1,0 +1,8 @@
+#!/bin/bash
+
+/opt/local/Library/Frameworks/Python.framework/Versions/2.7/bin/sshuttle --dns -vvr paxperscientiam@thedalles.dreamhost.com 0/0
+
+
+# helpful
+# https://dnsleaktest.com
+# http://whatismyipaddress.com/ip/69.163.162.47
