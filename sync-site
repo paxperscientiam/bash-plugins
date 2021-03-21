@@ -93,27 +93,27 @@ function sync-site() {
 
   [[ "${status}" -eq 1 ]] && exit 1
 
-  if [[ -f "${_BUILD_STATUS}" ]]; then
-    printf 'Found build-status file.\n\n'
-    source "${_BUILD_STATUS}"
-    if [[ "${?}" -ne 0 ]]; then
-      printf '%s\n' "Fix syntax of build-status file."
-      status=1
-    fi
+  # if [[ -f "${_BUILD_STATUS}" ]]; then
+  #   printf 'Found build-status file.\n\n'
+  #   source "${_BUILD_STATUS}"
+  #   if [[ "${?}" -ne 0 ]]; then
+  #     printf '%s\n' "Fix syntax of build-status file."
+  #     status=1
+  #   fi
 
-  else
-    printf 'A build-status file is needed and was not found!\n'
-    exit 1
-  fi
+  # else
+  #   printf 'A build-status file is needed and was not found!\n'
+  #   exit 1
+  # fi
 
   [[ "${status}" -eq 1 ]] && exit 1
 
-  if ! [[ "${BS}" =~ ^(production|dist)$ ]]; then
-    printf 'The build status is \"%s\", so cannot be synced.\n' "${BS}"
-    exit 1 ;
-  else
-    printf 'The build status is \"%s\", syncing will commence.\n' "${BS}"
-  fi
+  # if ! [[ "${BS}" =~ ^(production|dist)$ ]]; then
+  #   printf 'The build status is \"%s\", so cannot be synced.\n' "${BS}"
+  #   exit 1 ;
+  # else
+  #   printf 'The build status is \"%s\", syncing will commence.\n' "${BS}"
+  # fi
 
   function sync () {
     target="${sshuser:?}@${domain:?}:${remoteroot:?}"
