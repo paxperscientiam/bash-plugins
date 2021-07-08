@@ -140,11 +140,6 @@ function sync-site() {
           --times \
           --copy-links \
           --verbose \
-          "${HOME}/.bashrc" \
-          "${HOME}/.bash_profile" \
-          "${HOME}/.emacs.d/moose" \
-	  "${HOME}/.emacs.d/init.el" \
-	  "${HOME}/.emacs.d/custom.el" \
           "${localroot}" \
           "${target}"
   }
