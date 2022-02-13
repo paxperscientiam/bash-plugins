@@ -5,7 +5,18 @@
 #
 
 function fix_perms () {
-    var=$(pwd)
+    local var="${1}"
+    if [[ -z "${var}" ]]; then
+        local var=$(pwd)
+    else
+        if [[ ! -d "${var}" ]]; then
+            echo " $var is not a real path"
+            return 1
+        fi
+    fi
+
+    cd "${var}" || (echo ' Failed to change directories';  return 1)
+
     echo " The current working directory is: '$var'"
 
     #    read -r -p " Set all Folders permission to [eg. 0751]: " permissions
